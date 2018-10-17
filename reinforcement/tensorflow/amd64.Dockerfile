@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     git \
     python \
     python-pip \
-    cuda-nvprof-9-2
+    cuda-nvprof-9-2 \
+    cuda-libraries-9-2
 
 ENV PATH /usr/local/cuda-9.2/bin:$PATH
 WORKDIR /research
