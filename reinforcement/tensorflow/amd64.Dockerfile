@@ -1,12 +1,23 @@
 FROM nvidia/cuda:9.0-cudnn7-runtime-ubuntu16.04
-WORKDIR /research
+
 RUN apt-get update
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
+RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
     build-essential \
+    ca-certificates \
+    curl \ 
     git \
     python \
     python-pip
+
+#install nvprof
+RUN curl -SLO https://developer.nvidia.com/compute/cuda/9.0/Prod/local_installers/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_amd64-deb
+RUN dpkg -i cuda-repo-ubuntu1604-9-0-local_9.0.176-1_amd64-deb
+RUN apt-get update
+RUN apt-get install -y --no-install-suggests --no-install-recommends \
+    cuda-nvprof-9-0
+
+WORKDIR /research
+
 ENV HOME /research
 ENV PYENV_ROOT $HOME/.pyenv
 ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
