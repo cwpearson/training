@@ -157,17 +157,19 @@ def main_():
 
     print('Done with selfplay loop.')
 
-    time.sleep(10)
+    # time.sleep(10)
 
+    print('Waiting for workers to quit')
     for proc in procs:
-      proc.kill()
+      # proc.kill()
+      proc.wait()
 
     # Sometimes the workers need extra help...
-    time.sleep(5)
-    os.system('pkill -f selfplay_worker.py')
+    #time.sleep(5)
+    #os.system('pkill -f selfplay_worker.py')
 
     # Let things settle after we kill processes.
-    time.sleep(10)
+    #time.sleep(10)
 
     # Because we use process level parallelism for selfpaying and we don't
     # sync or communicate between processes, there could be too many games
