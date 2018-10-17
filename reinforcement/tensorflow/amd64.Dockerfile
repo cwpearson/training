@@ -4,18 +4,12 @@ RUN apt-get update
 RUN apt-get update && apt-get install -y --no-install-recommends --no-install-suggests \
     build-essential \
     ca-certificates \
-    curl \ 
     git \
     python \
-    python-pip
+    python-pip \
+    cuda-nvprof-9-2
 
-#install nvprof
-RUN curl -SLO https://developer.nvidia.com/compute/cuda/9.0/Prod/local_installers/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_amd64-deb
-RUN dpkg -i cuda-repo-ubuntu1604-9-0-local_9.0.176-1_amd64-deb
-RUN apt-get update
-RUN apt-get install -y --no-install-suggests --no-install-recommends \
-    cuda-nvprof-9-0
-
+ENV PATH /usr/local/cuda-9.2/bin:$PATH
 WORKDIR /research
 
 ENV HOME /research
