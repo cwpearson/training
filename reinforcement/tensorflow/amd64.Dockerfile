@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     cuda-libraries-9-2
 
 ENV PATH /usr/local/cuda-9.2/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib:$LD_LIBRARY_PATH
 WORKDIR /research
 
 ENV HOME /research
