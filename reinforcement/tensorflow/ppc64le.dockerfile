@@ -1,5 +1,7 @@
 FROM ibmcom/powerai:1.5.3-all-ubuntu16.04-py3
 
+ENV LICENSE yes
+
 WORKDIR /research
 ENV HOME /research
 RUN sudo chown -R `whoami` $HOME

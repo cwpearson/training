@@ -44,7 +44,7 @@ import multiprocessing
 #BASE_DIR = "gs://{}".format(BUCKET_NAME)
 #BASE_DIR = goparams.BASE_DIR
 BASE_DIR = sys.argv[1]
-
+GPU_ID= 0
 
 MODELS_DIR = os.path.join(BASE_DIR, 'models')
 SELFPLAY_DIR = os.path.join(BASE_DIR, 'data/selfplay')
@@ -217,7 +217,7 @@ def selfplay_hook(args):
 
 def selfplay_laod_model(model_name):
     load_file = os.path.join(MODELS_DIR, model_name)
-    network = dual_net.DualNetwork(load_file)
+    network = dual_net.DualNetwork(load_file, gpu_id=GPU_ID)
     return network
 
 
@@ -261,6 +261,10 @@ if __name__ == '__main__':
     random.seed(seed)
     tf.set_random_seed(seed)
     numpy.random.seed(seed)
+    if len(sys.argv) > 3:
+        worker_id = int(sys.argv[3])
+        GPU_ID = worker_id % goparams.SELFPLAY_NUM_GPUS
+    print('Self play worker: set GPU_ID = ', GPU_ID)
 
     # get TF logger
     log = logging.getLogger('tensorflow')

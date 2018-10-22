@@ -127,7 +127,7 @@ def main_():
     def start_worker(num_workers):
       #procs.append(subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE))
       worker_seed = hash(hash(SEED) + ITERATION) + num_workers
-      cmd = 'GOPARAMS={} python3 selfplay_worker.py {} {}'.format(os.environ['GOPARAMS'], BASE_DIR, worker_seed)
+      cmd = 'GOPARAMS={} python3 selfplay_worker.py {} {} {}'.format(os.environ['GOPARAMS'], BASE_DIR, worker_seed, num_workers)
       procs.append(subprocess.Popen(cmd, shell=True))
 
     selfplay_dir = os.path.join(SELFPLAY_DIR, model_name)

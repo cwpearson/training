@@ -46,19 +46,25 @@ TRAIN_BATCH_SIZE = 16
 
 
 class DualNetwork():
-    def __init__(self, save_file, **hparams):
+    def __init__(self, save_file, gpu_id = 0, **hparams):
         self.save_file = save_file
         self.hparams = get_default_hyperparams(**hparams)
         self.inference_input = None
         self.inference_output = None
+        print('DualNetwork.__init__: gpu_id={}'.format(gpu_id))
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
+        config.gpu_options.visible_device_list = str(gpu_id)
         self.sess = tf.Session(graph=tf.Graph(), config=config)
+        print('DualNetwork.__init__: created session')
         self.initialize_graph()
+        print('DualNetwork.__init__: initialized graph')
+
 
     def initialize_graph(self):
         with self.sess.graph.as_default():
             features, labels = get_inference_input()
+
             estimator_spec = model_fn(features, labels,
                                       tf.estimator.ModeKeys.PREDICT, self.hparams)
             self.inference_input = features
@@ -75,6 +81,7 @@ class DualNetwork():
         to set the weights to a different version of the player
         without redifining the entire graph."""
         tf.train.Saver().restore(self.sess, save_file)
+        print('DualNet.initialize_weights: restored save_file')
 
     def run(self, position, use_random_symmetry=True):
         probs, values = self.run_many([position],
@@ -255,7 +262,9 @@ def model_fn(features, labels, mode, params, config=None):
 
 
 def get_estimator(working_dir, **hparams):
+    print('dual_net.get_estimator')
     hparams = get_default_hyperparams(**hparams)
+
     return tf.estimator.Estimator(
         model_fn,
         model_dir=working_dir,
@@ -279,13 +288,15 @@ def bootstrap(working_dir, **hparams):
     # order to run the full train pipeline for 1 step.
     estimator_initial_checkpoint_name = 'model.ckpt-1'
     save_file = os.path.join(working_dir, estimator_initial_checkpoint_name)
+
     sess = tf.Session(graph=tf.Graph())
+
     with sess.graph.as_default():
         features, labels = get_inference_input()
         model_fn(features, labels, tf.estimator.ModeKeys.PREDICT, hparams)
         sess.run(tf.global_variables_initializer())
         tf.train.Saver().save(sess, save_file)
-
+    print("dual_net.boostrap: saved")
 
 def export_model(working_dir, model_path):
     """Take the latest checkpoint and export it to model_path for selfplay.
@@ -297,8 +308,10 @@ def export_model(working_dir, model_path):
         working_dir: The directory where tf.estimator keeps its checkpoints
         model_path: The path (can be a gs:// path) to export model to
     """
+    print('dual_net.export_model: about to create estimator')
     estimator = tf.estimator.Estimator(model_fn, model_dir=working_dir,
                                        params='ignored')
+    print('dual_net.export_model: created estimator')
     latest_checkpoint = estimator.latest_checkpoint()
     all_checkpoint_files = tf.gfile.Glob(latest_checkpoint + '*')
     for filename in all_checkpoint_files:
