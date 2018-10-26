@@ -1,13 +1,11 @@
 FROM ibmcom/powerai:1.5.3-all-ubuntu16.04-py3
 
-ENV LICENSE yes
-
 WORKDIR /research
 ENV HOME /research
 RUN sudo chown -R `whoami` $HOME
 
 #install nvprof
-RUN curl -SLO https://developer.nvidia.com/compute/cuda/9.2/Prod2/local_installers/cuda-repo-ubuntu1604-9-2-local_9.2.148-1_ppc64el
+ADD https://developer.nvidia.com/compute/cuda/9.2/Prod2/local_installers/cuda-repo-ubuntu1604-9-2-local_9.2.148-1_ppc64el cuda-repo-ubuntu1604-9-2-local_9.2.148-1_ppc64el
 RUN sudo dpkg -i cuda-repo-ubuntu1604-9-2-local_9.2.148-1_ppc64el
 RUN sudo apt-get update
 RUN sudo apt-get install -y --no-install-suggests --no-install-recommends \
@@ -18,6 +16,12 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-suggests --no-in
     git \
     libopenblas-dev \
     vim 
+
+# install pynvtx.py
+RUN sudo mkdir /opt/openvprof
+ADD https://raw.githubusercontent.com/cwpearson/openvprof/master/scripts/pynvtx.py /opt/openvprof/pynvtx.py
+RUN sudo chmod ugo+rx /opt/openvprof/pynvtx.py
+ENV PATH /opt/openvprof:$PATH
 
 ENV PYENV_ROOT $HOME/.pyenv
 ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
