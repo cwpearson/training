@@ -24,6 +24,7 @@ import go
 import sgf_wrapper
 
 import goparams
+import qmeas
 
 TF_RECORD_CONFIG = tf.python_io.TFRecordOptions(
     tf.python_io.TFRecordCompressionType.ZLIB)
@@ -124,6 +125,8 @@ def read_tf_records(batch_size, tf_records, num_repeats=None,
         a tf dataset of batched tensors
     '''
 
+    qmeas.start_time("preprocessing.read_tf_records")
+
     if shuffle_buffer_size is None:
         shuffle_buffer_size = SHUFFLE_BUFFER_SIZE
     if shuffle_records:
@@ -150,6 +153,7 @@ def read_tf_records(batch_size, tf_records, num_repeats=None,
     if shuffle_examples:
         dataset = dataset.shuffle(buffer_size=shuffle_buffer_size)
     dataset = dataset.batch(batch_size)
+    qmeas.stop_time("preprocessing.read_tf_records")
     return dataset
 
 
