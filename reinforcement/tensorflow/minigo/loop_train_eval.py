@@ -271,8 +271,13 @@ def rl_loop():
 
 
     if goparams.EVALUATE_MODELS:
-      if not evaluate(model_name, new_model):
+      qmeas.start_time("evaluate")
+      eval_result = evaluate(model_name, new_model):
+      qmeas.stop_time("evaluate")
+      if not eval_result:
+        qmeas.start_time('bury')
         bury_latest_model()
+        qmeas.stop_time('bury')
 
 
 
