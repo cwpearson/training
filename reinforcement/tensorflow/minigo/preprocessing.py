@@ -24,7 +24,7 @@ import go
 import sgf_wrapper
 
 import goparams
-import qmeas
+from utils import timer
 
 TF_RECORD_CONFIG = tf.python_io.TFRecordOptions(
     tf.python_io.TFRecordCompressionType.ZLIB)
@@ -125,35 +125,34 @@ def read_tf_records(batch_size, tf_records, num_repeats=None,
         a tf dataset of batched tensors
     '''
 
-    qmeas.start_time("preprocessing.read_tf_records")
+    with timer("preprocessing.read_tf_records"):
 
-    if shuffle_buffer_size is None:
-        shuffle_buffer_size = SHUFFLE_BUFFER_SIZE
-    if shuffle_records:
-        random.shuffle(tf_records)
-    record_list = tf.data.Dataset.from_tensor_slices(tf_records)
-
-    # compression_type here must agree with write_tf_examples
-    # cycle_length = how many tfrecord files are read in parallel
-    # block_length = how many tf.Examples are read from each file before
-    #   moving to the next file
-    # The idea is to shuffle both the order of the files being read,
-    # and the examples being read from the files.
-    dataset = record_list.interleave(lambda x:
-                                     tf.data.TFRecordDataset(
-                                         x, compression_type='ZLIB'),
-                                     cycle_length=64, block_length=16)
-    dataset = dataset.filter(lambda x: tf.less(
-        tf.random_uniform([1]), filter_amount)[0])
-    # TODO(amj): apply py_func for transforms here.
-    if num_repeats is not None:
-        dataset = dataset.repeat(num_repeats)
-    else:
-        dataset = dataset.repeat()
-    if shuffle_examples:
-        dataset = dataset.shuffle(buffer_size=shuffle_buffer_size)
-    dataset = dataset.batch(batch_size)
-    qmeas.stop_time("preprocessing.read_tf_records")
+      if shuffle_buffer_size is None:
+          shuffle_buffer_size = SHUFFLE_BUFFER_SIZE
+      if shuffle_records:
+          random.shuffle(tf_records)
+      record_list = tf.data.Dataset.from_tensor_slices(tf_records)
+  
+      # compression_type here must agree with write_tf_examples
+      # cycle_length = how many tfrecord files are read in parallel
+      # block_length = how many tf.Examples are read from each file before
+      #   moving to the next file
+      # The idea is to shuffle both the order of the files being read,
+      # and the examples being read from the files.
+      dataset = record_list.interleave(lambda x:
+                                       tf.data.TFRecordDataset(
+                                           x, compression_type='ZLIB'),
+                                       cycle_length=64, block_length=16)
+      dataset = dataset.filter(lambda x: tf.less(
+          tf.random_uniform([1]), filter_amount)[0])
+      # TODO(amj): apply py_func for transforms here.
+      if num_repeats is not None:
+          dataset = dataset.repeat(num_repeats)
+      else:
+          dataset = dataset.repeat()
+      if shuffle_examples:
+          dataset = dataset.shuffle(buffer_size=shuffle_buffer_size)
+      dataset = dataset.batch(batch_size)
     return dataset
 
 
