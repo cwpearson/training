@@ -14,7 +14,7 @@ rm -f $FILE
 
 echo "====BEGIN INIT===="
 GOPARAMS=$1 python3 loop_init.py
-for i in {1..3};
+for i in {1..100};
 do
 echo "====BEGIN SELFPLAY $i====";
 date;
