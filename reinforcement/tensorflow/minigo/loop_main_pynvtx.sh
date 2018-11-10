@@ -13,18 +13,31 @@ rm -f $FILE
 
 
 echo "====BEGIN INIT===="
-GOPARAMS=$1 nvprof -o /research/mnt/timeline_init_%p.nvprof -f --profile-child-processes pynvtx.py --depth 3 loop_init.py
+nvprof -o /research/mnt/timeline_init.nvprof -f --profile-all-processes &
+nvprof_pid=$!
+sleep 5
+GOPARAMS=$1 pynvtx.py --depth 3 loop_init.py
+kill -INT $nvprof_pid
+
 for i in {1..2};
 do
 echo "====BEGIN SELFPLAY====";
 date;
-GOPARAMS=$1 nvprof -o /research/mnt/timeline_selfplay_%p_$i.nvprof -f --profile-child-processes pynvtx.py --depth 3 loop_selfplay.py $SEED $i 2>&1
+nvprof -o /research/mnt/timeline_selfplay_%p_$i.nvprof -f --profile-all-processes &
+nvprof_pid=$!
+sleep 5
+GOPARAMS=$1 pynvtx.py --depth 3 loop_selfplay.py $SEED $i 2>&1
+kill -INT $nvprof_pid
 date;
 echo "====END SELFPLAY====";
 
 echo "====BEGIN TRAIN_EVAL====";
 date;
-GOPARAMS=$1 nvprof -o /research/mnt/timeline_train-eval_%p_$i.nvprof -f --profile-child-processes pynvtx.py --depth 3 loop_train_eval.py $SEED $i 2>&1
+nvprof -o /research/mnt/timeline_train_eval_%p_$i.nvprof -f --profile-all-processes &
+nvprof_pid=$!
+sleep 5
+GOPARAMS=$1 pynvtx.py --depth 3 loop_train_eval.py $SEED $i 2>&1
+kill -INT $nvprof_pid
 date;
 echo "====END TRAIN_EVAL====";
 
@@ -38,3 +51,4 @@ else
    echo "$FILE does not exist; looping again."
 fi
 done
+
