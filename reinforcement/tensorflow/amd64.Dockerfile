@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
     python \
     python-pip \
     cuda-nvprof-9-2 \
-    cuda-libraries-9-2
+    cuda-libraries-9-2 \
+    vim
 
 ENV PATH /usr/local/cuda-9.2/bin:$PATH
 ENV LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib:$LD_LIBRARY_PATH
@@ -31,6 +32,5 @@ WORKDIR /research/reinforcement
 RUN pip3 install --upgrade pip
 RUN pip3 install --upgrade setuptools
 RUN pip3 install -r minigo/requirements.txt
-#RUN pip3 install "tensorflow-gpu>=1.5,<1.6"
 
 ENTRYPOINT ["/bin/bash"]
