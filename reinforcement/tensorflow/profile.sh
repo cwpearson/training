@@ -3,6 +3,8 @@
 # Run minigo... stop when it converges.
 set -e
 
+PARAMS_FILE=params/profile.json
+
 echo "==== hostname ===="
 hostname
 
@@ -12,7 +14,11 @@ lscpu
 echo "==== nvidia-smi ===="
 nvidia-smi
 
+echo "==== PARAMS ===="
+echo "loading from $PARAMS_FILE"
+cat $PARAMS_FILE
+
 SEED=$1
 mkdir -p /research/results/minigo/final/
 cd /research/reinforcement/minigo
-bash loop_main_profile.sh params/profile.json $SEED
+bash loop_main_profile.sh $PARAMS_FILE $SEED
