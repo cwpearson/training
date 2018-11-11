@@ -11,22 +11,26 @@ SEED=$2
 FILE="TERMINATE_FLAG"
 rm -f $FILE
 
+NVPROF="nvprof -f --profile-child-processes"
+PYNVTX="pynvtx.py --depth 3"
 
 echo "====BEGIN INIT===="
-GOPARAMS=$1 nvprof -o /research/mnt/timeline_init_%p.nvprof -f --profile-child-processes pynvtx.py --depth 3 loop_init.py
+date;
+GOPARAMS=$1 $NVPROF -o /research/mnt/timeline_init_%p.nvprof $PYNVTX loop_init.py
+
 for i in {1..2};
 do
 echo "====BEGIN SELFPLAY====";
 date;
-GOPARAMS=$1 nvprof -o /research/mnt/timeline_selfplay_%p_$i.nvprof -f --profile-child-processes pynvtx.py --depth 3 loop_selfplay.py $SEED $i 2>&1
-date;
+GOPARAMS=$1 $NVPROF -o /research/mnt/timeline_selfplay_%p_$i.nvprof $PYNVTX loop_selfplay.py $SEED $i 2>&1
 echo "====END SELFPLAY====";
+date;
 
 echo "====BEGIN TRAIN_EVAL====";
 date;
-GOPARAMS=$1 nvprof -o /research/mnt/timeline_train-eval_%p_$i.nvprof -f --profile-child-processes pynvtx.py --depth 3 loop_train_eval.py $SEED $i 2>&1
-date;
+GOPARAMS=$1 $NVPROF -o /research/mnt/timeline_train_eval_%p_$i.nvprof $PYNVTX loop_train_eval.py $SEED $i 2>&1
 echo "====END TRAIN_EVAL====";
+date;
 
 
 
@@ -38,3 +42,4 @@ else
    echo "$FILE does not exist; looping again."
 fi
 done
+

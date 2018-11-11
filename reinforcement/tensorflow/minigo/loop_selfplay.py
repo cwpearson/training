@@ -211,5 +211,6 @@ if __name__ == '__main__':
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
     log.addHandler(fh)
-    main_()
+    with timer("loop_selfplay.py::main_"):
+        main_()
     qmeas.end()
