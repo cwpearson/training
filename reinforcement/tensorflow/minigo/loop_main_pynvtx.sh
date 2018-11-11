@@ -11,35 +11,26 @@ SEED=$2
 FILE="TERMINATE_FLAG"
 rm -f $FILE
 
+NVPROF="nvprof -f --profile-child-processes"
+PYNVTX="pynvtx.py --depth 3"
 
 echo "====BEGIN INIT===="
-nvprof -o /research/mnt/timeline_init.nvprof -f --profile-all-processes &
-nvprof_pid=$!
-sleep 5
-GOPARAMS=$1 pynvtx.py --depth 3 loop_init.py
-kill -INT $nvprof_pid
+date;
+GOPARAMS=$1 $NVPROF -o /research/mnt/timeline_init_%p.nvprof $PYNVTX loop_init.py
 
 for i in {1..2};
 do
 echo "====BEGIN SELFPLAY====";
 date;
-nvprof -o /research/mnt/timeline_selfplay_%p_$i.nvprof -f --profile-all-processes &
-nvprof_pid=$!
-sleep 5
-GOPARAMS=$1 pynvtx.py --depth 3 loop_selfplay.py $SEED $i 2>&1
-kill -INT $nvprof_pid
-date;
+GOPARAMS=$1 $NVPROF -o /research/mnt/timeline_selfplay_%p_$i.nvprof $PYNVTX loop_selfplay.py $SEED $i 2>&1
 echo "====END SELFPLAY====";
+date;
 
 echo "====BEGIN TRAIN_EVAL====";
 date;
-nvprof -o /research/mnt/timeline_train_eval_%p_$i.nvprof -f --profile-all-processes &
-nvprof_pid=$!
-sleep 5
-GOPARAMS=$1 pynvtx.py --depth 3 loop_train_eval.py $SEED $i 2>&1
-kill -INT $nvprof_pid
-date;
+GOPARAMS=$1 $NVPROF -o /research/mnt/timeline_train_eval_%p_$i.nvprof $PYNVTX loop_train_eval.py $SEED $i 2>&1
 echo "====END TRAIN_EVAL====";
+date;
 
 
 
