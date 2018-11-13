@@ -18,10 +18,10 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-suggests --no-in
     vim 
 
 # install pynvtx.py
-RUN sudo mkdir /opt/openvprof
-ADD https://raw.githubusercontent.com/cwpearson/openvprof/master/scripts/pynvtx.py /opt/openvprof/pynvtx.py
-RUN sudo chmod ugo+rx /opt/openvprof/pynvtx.py
-ENV PATH /opt/openvprof:$PATH
+RUN sudo mkdir /opt/pynvtx
+ADD https://raw.githubusercontent.com/cwpearson/pynvtx/master/pynvtx.py /opt/pynvtx/pynvtx.py
+RUN sudo chmod ugo+rx /opt/pynvtx/pynvtx.py
+ENV PATH /opt/pynvtx:$PATH
 
 ENV PYENV_ROOT $HOME/.pyenv
 ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
