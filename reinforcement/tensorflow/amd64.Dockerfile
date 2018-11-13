@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends --no-install-su
 
 ENV PATH /usr/local/cuda-9.2/bin:$PATH
 ENV LD_LIBRARY_PATH=/usr/local/cuda-9.2/lib:$LD_LIBRARY_PATH
+
+
 WORKDIR /research
 
 ENV HOME /research
@@ -32,5 +34,11 @@ WORKDIR /research/reinforcement
 RUN pip3 install --upgrade pip
 RUN pip3 install --upgrade setuptools
 RUN pip3 install -r minigo/requirements.txt
+
+# install pynvtx.py
+RUN mkdir /opt/pynvtx
+ADD https://raw.githubusercontent.com/cwpearson/pynvtx/master/pynvtx.py /opt/pynvtx/pynvtx.py
+RUN chmod ugo+rx /opt/pynvtx/pynvtx.py
+ENV PATH /opt/pynvtx:$PATH
 
 ENTRYPOINT ["/bin/bash"]
